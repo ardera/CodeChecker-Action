@@ -10,6 +10,7 @@ mkdir -p CodeChecker
 python3 -m venv CodeChecker/venv
 source CodeChecker/venv/bin/activate
 
+pip3 install setuptools
 if [ "master" = "$IN_VERSION" ]; then
   echo "::group::Installing CodeChecker (latest) from PyPI"
   pip3 install codechecker
