@@ -4,36 +4,19 @@ if [[ ! -z "$CODECHECKER_ACTION_DEBUG" ]]; then
   set -x
 fi
 
-echo "::group::Installing CodeChecker $IN_VERSION from PyPI"
-if [[ "$IN_VERSION" == "master" ]]; then
-  # The default branch name "master" is offered as a convenient shortcut for
-  # fetching the latest release. Unfortunately, this might just be a release
-  # candidate, which we do not wish to supply to automated production users
-  # this eagerly...
-
-  # Hack to get pip list us which versions are available...
-  # (thanks, http://stackoverflow.com/a/26664162)
-  pip3 install codechecker=="You_cant_be_serious_mate" 2>&1  \
-    | grep "ERROR: Could not find a version"                 \
-    | sed 's/^.*(from versions: \(.*\))/\1/'                 \
-    | sed 's/, /\n/g'                                        \
-    | grep -v 'rc\|a'                                        \
-    | sort -V                                                \
-    | tail -n 1                                              \
-    >> "codechecker_latest_release.txt"
-
-  IN_VERSION=$(cat "codechecker_latest_release.txt")
-  echo "Selected CodeChecker version $IN_VERSION automatically."
-  rm "codechecker_latest_release.txt"
-fi
-
 set -e
 
 mkdir -p CodeChecker
 python3 -m venv CodeChecker/venv
 source CodeChecker/venv/bin/activate
 
-pip3 install codechecker=="$IN_VERSION"
+if [ "master" = "$IN_VERSION" ]; then
+  echo "::group::Installing CodeChecker (latest) from PyPI"
+  pip3 install codechecker
+else
+  echo "::group::Installing CodeChecker ($IN_VERSION) from PyPI"
+  pip3 install "codechecker==$IN_VERSION"
+fi
 
 pip3 show codechecker
 echo "::endgroup::"
