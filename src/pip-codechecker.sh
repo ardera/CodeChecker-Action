@@ -29,6 +29,10 @@ fi
 
 set -e
 
+mkdir -p CodeChecker
+python3 -m venv CodeChecker/venv
+source CodeChecker/venv/bin/activate
+
 pip3 install codechecker=="$IN_VERSION"
 
 pip3 show codechecker
@@ -41,3 +45,5 @@ CodeChecker web-version
 echo "PATH=$(dirname $(which CodeChecker))" >> "$GITHUB_OUTPUT"
 echo "VERSION=$(CodeChecker analyzer-version | grep 'Base package' | cut -d'|' -f 2 | tr -d ' ')" >> "$GITHUB_OUTPUT"
 echo "GITSEVEN=$(CodeChecker analyzer-version | grep 'Git commit' | cut -d'|' -f 2 | cut -c 2-8)" >> "$GITHUB_OUTPUT"
+
+deactivate
